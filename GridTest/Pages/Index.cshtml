@@ -1,0 +1,53 @@
+@page
+@using GridTest.Models
+@model IndexModel
+
+<h2>Sample Grid Project</h2>
+
+<form method="post">
+<div id="gridContainer">
+    @(Html.DevExtreme().DataGrid<SecurityGroupProcedureForGridDto>()
+        .ID("Permissions")
+        .DataSource(d => d.RemoteController().LoadUrl(Url.Page("IndexModal", "Procedures")).Key("Id"))
+        .RepaintChangesOnly(true)
+        .Editing(editing => {
+                    editing.AllowUpdating(true);
+                    editing.Mode(GridEditMode.Cell);
+            })
+        .TwoWayBindingEnabled(true)
+        .KeyExpr("Id")
+        .Columns(columns => {
+            columns.Add()
+                .Width("350")
+                .Caption("Permission Name")
+                .Alignment(HorizontalAlignment.Center)
+                .DataField("ShortDescription");
+            columns.Add()
+                .Width("975")
+                .Caption("Setting")
+                .Alignment(HorizontalAlignment.Center)
+                .DataField("Status")
+                .ShowEditorAlways(true)
+                .EditCellTemplate(@<text>
+                                @(Html.DevExtreme().RadioGroup()
+                        .DataSource(new List<KeyValuePair<bool?, string>>() { 
+                            new KeyValuePair<bool?, string>(null, "Not Defined"),
+                            new KeyValuePair<bool?, string>(true, "Enabled"),
+                            new KeyValuePair<bool?, string>(false, "Disabled"),
+                        })
+                        .ValueExpr("Key")
+                        .DisplayExpr("Value")
+                        .Layout(Orientation.Horizontal)
+                        .OnValueChanged("function(e) { setValue(e.value); }")
+                            .Value(new JS("value"))
+                                )
+                            </text>);
+        })
+        .ShowBorders(true)
+        .ShowColumnHeaders(true)
+        .Paging(p => p.PageSize(10))
+        )
+    </div>
+
+    <div><input type="submit" /></div>
+</form>
